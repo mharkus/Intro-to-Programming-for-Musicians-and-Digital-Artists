@@ -4,27 +4,45 @@
 TriOsc s => Pan2 p => dac;
 SinOsc s2 => Pan2 p2 => dac;
 SinOsc s3 => Pan2 p3 => dac;
-SinOsc s4 => dac;
+SawOsc s4 => dac;
 
 // setup our pans
 0 => p.pan;
 -1 => p2.pan;
 1 => p3.pan;
 
-// and gains...
-0.3 => s.gain;
-0.3 => s2.gain;
-0.3 => s3.gain;
-0.6 => s4.gain;
+0 => s.gain;
+0 => s2.gain;
+0 => s3.gain;
+0 => s4.gain;
 
 // mute our s4 oscillator as we will
 // only use it at runningTime == 8.25 onwards
 0 => s4.freq;
 
 [55,50,53,55,50,55,52,50] @=> int melody[];
+[50, 52, 53, 55, 57, 59, 60, 62] @=> int dorian[];
 
-// limit this melody to 30 seconds
-now + 30::second => time limit;
+// limit the intro to 3 seconds
+now + 4::second => time limit;
+
+0 => float gain;
+
+while(now < limit){
+    Std.mtof(dorian[Math.random2(0, dorian.cap() - 1)] * 1.1 ) => s.freq;
+    gain => s.gain;
+    gain + 0.01 => gain;
+    10::ms => now;
+}
+
+// and gains...
+0.6 => s.gain;
+0.6 => s2.gain;
+0.6 => s3.gain;
+0.3 => s4.gain;
+
+// then limit the remaining melody to 27 seconds
+now + 26::second => limit;
 0.25 => float runningTime;
 
 // this is the start of higher note beats
